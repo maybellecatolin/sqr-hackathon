@@ -38,6 +38,10 @@ export default function PokerContainer() {
           </i>
         </span>
       </h4>
+      <h3 className="text-lg font-medium mb-2">
+        User Story: <span className="font-bold text-green-500">SQRPR-4444</span>
+      </h3>
+
       <div>
         <ul className="mt-2 space-y-1">
           <div className="flex flex-wrap gap-2 my-4">

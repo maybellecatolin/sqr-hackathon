@@ -1,6 +1,9 @@
 import { useState, ChangeEvent, FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUserStore } from "./stores/UserStore";
+import SpeechRecognition, {
+  useSpeechRecognition,
+} from "react-speech-recognition";
 
 import "./App.css";
 
@@ -16,16 +19,28 @@ function App() {
       },
     ],
   });
+
+  const {
+    transcript,
+    listening,
+    resetTranscript,
+    browserSupportsSpeechRecognition,
+  } = useSpeechRecognition();
+
   const [step, setStep] = useState("name");
   const [service, setService] = useState({});
   const setUser = useUserStore((state) => state.setUser);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    resetTranscript();
   };
 
   const handleNameSubmit = (e: FormEvent) => {
     e.preventDefault();
+    if (transcript) {
+      setFormData({ ...formData, name: transcript });
+    }
     setUser(formData);
     setStep("role");
   };
@@ -61,14 +76,21 @@ function App() {
           <div>
             <form onSubmit={handleNameSubmit}>
               <div>
-                <div className="py-2">
+                <div className="py-2 flex">
                   <input
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    className="mr-1 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     name="name"
-                    placeholder="John"
+                    placeholder="Enter name"
                     onChange={handleChange}
+                    value={transcript || formData.name}
                     required
                   />
+                  <button
+                    className="bg-transparent px-2"
+                    onClick={SpeechRecognition.startListening}
+                  >
+                    &#127908;
+                  </button>
                 </div>
                 <div>
                   <button type="submit">Let's go!</button>
@@ -88,21 +110,35 @@ function App() {
           <div>
             <text className="text-2xl">Joining as:</text>
           </div>
-          <button
-            className="text-xl m-2"
-            onClick={() => handleRole("facilitator")}
-          >
-            Facilitator
-          </button>
-          <button className="text-xl m-2" onClick={() => handleRole("user")}>
-            User
-          </button>
-          <button
-            className="text-xl m-2"
-            onClick={() => handleRole("observer")}
-          >
-            Observer
-          </button>
+          <div className="flex flex-row py-4">
+            <div className="flex flex-col content-center justify-center px-2">
+              <button
+                className="w-36 h-36 bg-[url('https://t3.ftcdn.net/jpg/02/68/69/96/360_F_268699676_l2e8ARcqkXtlXeYDCf5XzWLRGemqYcyA.jpg')] bg-cover bg-center rounded-lg hover:brightness-110 transition-all "
+                onClick={() => handleRole("facilitator")}
+              ></button>
+              {/* <div>
+                <text> Facilitator</text>
+              </div> */}
+            </div>
+            <div className="flex flex-col content-center justify-center px-2">
+              <button
+                className="w-36 h-36 bg-[url('https://easy-peasy.ai/cdn-cgi/image/quality=80,format=auto,width=700/https://media.easy-peasy.ai/5fee2ab3-57d9-45cf-bf5b-fe7136cada31/8e68ab24-1d22-46b3-9ebc-c9935def7ae7.png')] bg-cover bg-center rounded-lg hover:brightness-110 transition-all "
+                onClick={() => handleRole("user")}
+              ></button>
+              {/* <div>
+                <text> User</text>
+              </div> */}
+            </div>
+            <div className="flex flex-col content-center justify-center px-2">
+              <button
+                className="w-36 h-36 bg-[url('https://media.istockphoto.com/id/486972402/vector/watching-a-game.jpg?s=612x612&w=0&k=20&c=DdudPdwgohiBuvm7Hg-zmJAQzRZwTcDnLE5-aDDJP5g=')] bg-cover bg-center rounded-lg hover:brightness-110 transition-all "
+                onClick={() => handleRole("observer")}
+              ></button>
+              {/* <div>
+                <text> User</text>
+              </div> */}
+            </div>
+          </div>
         </div>
       )}
       {step === "select" && (
