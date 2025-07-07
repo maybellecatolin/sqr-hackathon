@@ -7,13 +7,13 @@ import RetroContainer from "./pages/Retrospective/RetroContainer.tsx";
 import "./index.css";
 
 createRoot(document.getElementById("root")!).render(
-  <StrictMode>
-    <Router>
-      <Routes>
-        <Route path="/" element={<Parent />} />
-        <Route path="/estimation" element={<PokerContainer />} />
-        <Route path="/retro" element={<RetroContainer />} />
-      </Routes>
-    </Router>
-  </StrictMode>
+  // <StrictMode>
+  <Router>
+    <Routes>
+      <Route path="/" element={<Parent />} />
+      <Route path="/estimation" element={<PokerContainer />} />
+      <Route path="/retro" element={<RetroContainer />} />
+    </Routes>
+  </Router>
+  // </StrictMode>
 );
