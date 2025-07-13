@@ -7,61 +7,58 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 
-interface User {
+interface RetroItem {
+  id: string;
+  type: 'wentWell' | 'wentWrong' | 'toImprove' | 'actionItem';
+  text: string;
+  author: string;
+  votes: number;
+}
+
+interface RetroUser {
   name: string;
   role: 'facilitator' | 'observer' | 'voter';
   canVote: boolean;
 }
 
-interface Vote {
-  user: string;
-  value: string;
-}
-
-interface RoomState {
-  votes: Vote[];
-  revealed: boolean;
-  users: User[];
-  story?: string;
+interface RetroRoomState {
+  items: RetroItem[];
+  users: RetroUser[];
 }
 
 @WebSocketGateway({ cors: true })
-export class PokerGateway {
+export class RetroGateway {
   @WebSocketServer()
   server: Server;
 
-  private rooms: Record<string, RoomState> = {};
+  private rooms: Record<string, RetroRoomState> = {};
 
   createRoom(roomId: string, facilitator: string) {
     if (!this.rooms[roomId]) {
       this.rooms[roomId] = {
-        votes: [],
-        revealed: false,
+        items: [],
         users: [{ name: facilitator, role: 'facilitator', canVote: false }],
-        story: '',
       };
     }
   }
 
-  @SubscribeMessage('join')
+  @SubscribeMessage('retroJoin')
   handleJoin(
     @MessageBody()
     data: {
       room: string;
       user: string;
-      role: 'observer' | 'voter' | 'facilitator';
+      role: 'facilitator' | 'observer' | 'voter';
     },
     @ConnectedSocket() client: Socket,
   ) {
     void client.join(data.room);
     if (!this.rooms[data.room]) {
       this.rooms[data.room] = {
-        votes: [],
-        revealed: false,
+        items: [],
         users: [],
       };
     }
-    // Add user if not already present
     const room = this.rooms[data.room];
     if (!room.users.find((u) => u.name === data.user)) {
       room.users.push({
@@ -78,23 +75,28 @@ export class PokerGateway {
         canVote: u.role === 'voter',
       })),
     };
-    this.server.to(data.room).emit('state', state);
+    this.server.to(data.room).emit('retroState', state);
   }
 
-  @SubscribeMessage('vote')
-  handleVote(
-    @MessageBody() data: { room: string; user: string; value: string },
+  @SubscribeMessage('retroAddItem')
+  handleAddItem(
+    @MessageBody()
+    data: {
+      room: string;
+      user: string;
+      item: Omit<RetroItem, 'id' | 'votes'>;
+    },
   ) {
     const room = this.rooms[data.room];
     if (!room) return;
-    const userObj = room.users.find((u) => u.name === data.user);
-    if (!userObj || userObj.role !== 'voter') return;
-    const existing = room.votes.find((v) => v.user === data.user);
-    if (existing) {
-      existing.value = data.value;
-    } else {
-      room.votes.push({ user: data.user, value: data.value });
-    }
+    const user = room.users.find((u) => u.name === data.user);
+    if (!user || user.role !== 'voter') return;
+    const newItem: RetroItem = {
+      ...data.item,
+      id: Math.random().toString(36).substr(2, 9),
+      votes: 0,
+    };
+    room.items.push(newItem);
     // Always emit state with correct canVote for all users
     const state = {
       ...room,
@@ -103,14 +105,26 @@ export class PokerGateway {
         canVote: u.role === 'voter',
       })),
     };
-    this.server.to(data.room).emit('state', state);
+    this.server.to(data.room).emit('retroState', state);
   }
 
-  @SubscribeMessage('reveal')
-  handleReveal(@MessageBody() data: { room: string }) {
+  @SubscribeMessage('retroVoteItem')
+  handleVoteItem(
+    @MessageBody()
+    data: {
+      room: string;
+      user: string;
+      itemId: string;
+    },
+  ) {
     const room = this.rooms[data.room];
     if (!room) return;
-    room.revealed = true;
+    const user = room.users.find((u) => u.name === data.user);
+    if (!user || user.role !== 'voter') return;
+    const item = room.items.find((i) => i.id === data.itemId);
+    if (item) {
+      item.votes += 1;
+    }
     // Always emit state with correct isVoteEnable for all users
     const state = {
       ...room,
@@ -119,14 +133,14 @@ export class PokerGateway {
         isVoteEnable: u.role === 'voter',
       })),
     };
-    this.server.to(data.room).emit('state', state);
+    this.server.to(data.room).emit('retroState', state);
   }
 
-  @SubscribeMessage('setStory')
-  handleSetStory(@MessageBody() data: { room: string; story: string }) {
+  @SubscribeMessage('retroDeleteItem')
+  handleDeleteItem(@MessageBody() data: { room: string; itemId: string }) {
     const room = this.rooms[data.room];
     if (!room) return;
-    room.story = data.story;
+    room.items = room.items.filter((i) => i.id !== data.itemId);
     // Always emit state with correct isVoteEnable for all users
     const state = {
       ...room,
@@ -135,23 +149,14 @@ export class PokerGateway {
         isVoteEnable: u.role === 'voter',
       })),
     };
-    this.server.to(data.room).emit('state', state);
+    this.server.to(data.room).emit('retroState', state);
   }
 
-  @SubscribeMessage('reset')
+  @SubscribeMessage('retroReset')
   handleReset(@MessageBody() data: { room: string }) {
     const room = this.rooms[data.room];
     if (!room) return;
-    room.votes = [];
-    room.revealed = false;
-    // Always emit state with correct isVoteEnable for all users
-    const state = {
-      ...room,
-      users: room.users.map((u) => ({
-        ...u,
-        isVoteEnable: u.role === 'voter',
-      })),
-    };
-    this.server.to(data.room).emit('state', state);
+    room.items = [];
+    this.server.to(data.room).emit('retroState', room);
   }
 }
