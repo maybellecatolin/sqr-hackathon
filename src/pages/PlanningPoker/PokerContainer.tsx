@@ -4,93 +4,7 @@ import { v4 as uuidv4 } from "uuid";
 import { usePokerStore } from "../../stores/PokerStore";
 import { useUserStore } from "../../stores/UserStore";
 import UserCard from "../../components/UserCard";
-
-const cardOptions = ["0", "1", "2", "3", "5", "8", "13", "21", "?"];
-const sprints = [
-  {
-    title: "Sprint 1.33.0",
-    userStories: [
-      {
-        story: "SQRPR-1234",
-        estimate: 8,
-      },
-      {
-        story: "SQRPR-1235",
-        estimate: 1,
-      },
-      {
-        story: "SQRPR-1236",
-        estimate: 5,
-      },
-      {
-        story: "SQRPR-1237",
-        estimate: 3,
-      },
-      {
-        story: "SQRPR-1238",
-        estimate: 8,
-      },
-      {
-        story: "SQRPR-3236",
-        estimate: 5,
-      },
-      {
-        story: "SQRPR-31237",
-        estimate: 3,
-      },
-      {
-        story: "SQRPR-3238",
-        estimate: 1,
-      },
-    ],
-  },
-  {
-    title: "Sprint 1.34.0",
-    userStories: [
-      {
-        story: "SQRPR-2234",
-        estimate: 3,
-      },
-      {
-        story: "SQRPR-2235",
-        estimate: 1,
-      },
-      {
-        story: "SQRPR-2236",
-        estimate: 5,
-      },
-      {
-        story: "SQRPR-2237",
-        estimate: 1,
-      },
-    ],
-  },
-  {
-    title: "Sprint 1.35.0",
-    userStories: [
-      {
-        story: "SQRPR-3234",
-        estimate: 1,
-      },
-      {
-        story: "SQRPR-3235",
-        estimate: 1,
-      },
-      {
-        story: "SQRPR-3236",
-        estimate: 5,
-      },
-      {
-        story: "SQRPR-31237",
-        estimate: 3,
-      },
-      {
-        story: "SQRPR-3238",
-        estimate: 1,
-      },
-    ],
-  },
-];
+import PokerHistory from "../../components/PokerHistory";
 
 export default function PokerContainer() {
   const [localPlayerId, setLocalPlayerId] = useState("");
@@ -115,9 +29,9 @@ export default function PokerContainer() {
       <h1 className="text-3xl font-bold py-4">Planning Poker 🃏 </h1>
       <h3 className="text-lg font-medium mb-2">Welcome, {user?.name}!</h3>
       {step === "lists" && (
-        <div className="max-w-4xl mx-auto px-4 py-6">
+        <div className="">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-semibold">Sprints</h2>
+            <h2 className="text-xl font-bold text-green-500">Sprints</h2>
             <button
               onClick={() => setStep("play")}
               className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
@@ -125,32 +39,8 @@ export default function PokerContainer() {
               New Sprint +
             </button>
           </div>
-          <div className="overflow-x-auto">
-            <table className="min-w-full table-auto border border-gray-300">
-              <thead className="">
-                <tr>
-                  <th className="px-4 py-2 border"></th>
-                  <th className="px-4 py-2 border">User Stories</th>
-                  <th className="px-4 py-2 border">Total</th>
-                </tr>
-              </thead>
-              <tbody>
-                {sprints.map((user) => (
-                  <tr key={user.title} className="hover:bg-green-500">
-                    <td className="px-4 py-2 border">{user.title}</td>
-                    <td className="px-4 py-2 border">
-                      {user.userStories.length}
-                    </td>
-                    <td className="px-4 py-2 border">
-                      {user.userStories.reduce(
-                        (total, story) => total + story.estimate,
-                        0
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="">
+            <PokerHistory />
           </div>
         </div>
       )}
