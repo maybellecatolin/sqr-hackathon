@@ -1,4 +1,4 @@
-import { useState, ChangeEvent, FormEvent } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUserStore } from "./stores/UserStore";
 import SpeechRecognition, {
@@ -6,9 +6,11 @@ import SpeechRecognition, {
 } from "react-speech-recognition";
 
 import "./App.css";
+import InviteModal from "./components/InviteModal";
 
 function App() {
   const navigate = useNavigate();
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     role: "",
@@ -56,6 +58,11 @@ function App() {
     setService(service);
     setUser(formData);
     navigate(`/${service.name}`);
+  };
+
+  const handleModalSubmit = (value: string) => {
+    console.log(value);
+    // navigate(`/${service.name}`);
   };
 
   return (
@@ -149,11 +156,12 @@ function App() {
           <div className="w-2xl">
             <button
               className="p-6 text-4xl"
-              onClick={() =>
-                handleSelectService({
-                  name: "estimation",
-                  id: Math.random().toString(36).slice(2, 7),
-                })
+              onClick={
+                () => setIsModalOpen(true)
+                // handleSelectService({
+                //   name: "estimation",
+                //   id: Math.random().toString(36).slice(2, 7),
+                // })
               }
             >
               Estimation
@@ -174,6 +182,11 @@ function App() {
           </div>
         </div>
       )}
+      <InviteModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSubmit={handleModalSubmit}
+      />
     </>
   );
 }
