@@ -23,6 +23,11 @@ export default function PokerContainer() {
 
   return (
     <div>
+      <div className="pb-2">
+        <text className="text-4xl">
+          Sprint<span className="text-[#00B100] font-bold">Sync</span>
+        </text>
+      </div>
       <h1 className="text-3xl font-bold py-4">Planning Poker 🃏 </h1>
       <h3 className="text-lg font-medium mb-2">Welcome, {user?.name}!</h3>
 
@@ -67,13 +72,28 @@ export default function PokerContainer() {
           </ul>
         </div>
         <div>
-          <button
-            onClick={toggleShowCards}
-            className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 mb-4"
-          >
-            {showCards ? "Hide Cards" : "Show Cards"}
-          </button>
+          {user.role === "facilitator" && (
+            <div>
+              <button
+                onClick={toggleShowCards}
+                className="bg-indigo-600 text-white px-4 py-2  mx-2 rounded hover:bg-indigo-700 mb-4"
+              >
+                {showCards ? "Hide" : "Reveal"}
+              </button>
+              <button
+                onClick={() => {}}
+                className="bg-indigo-600  mx-2  text-white px-4 py-2 rounded hover:bg-indigo-700 mb-4"
+              >
+                Restart
+              </button>
+            </div>
+          )}
         </div>
+        {!showCards && !["facilitator", "observer"].includes(user.role) && (
+          <h3 className="text-lg font-medium mb-2 text-blue-400">
+            Waiting for players vote...
+          </h3>
+        )}
         <div className="p-6 font-sans ">
           <>
             <h4 className="text-xl font-semibold">
@@ -86,6 +106,7 @@ export default function PokerContainer() {
                   value={value}
                   selected={currentPlayer?.selectedCard === value}
                   onClick={() => selectCard(currentPlayer.id, value)}
+                  disabled={["facilitator", "observer"].includes(user.role)}
                 />
               ))}
             </div>

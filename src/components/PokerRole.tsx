@@ -23,7 +23,12 @@ export const PokerRole = () => {
 
   return (
     <>
-      <h1 className="text-3xl font-bold py-4 text-green-500">
+      <div className="pb-2">
+        <text className="text-6xl">
+          Sprint<span className="text-[#00B100] font-bold">Sync</span>
+        </text>
+      </div>
+      <h1 className="text-4xl font-bold py-4 text-green-500">
         Planning Poker 🃏{" "}
       </h1>
       <div className="text-left pl-8">

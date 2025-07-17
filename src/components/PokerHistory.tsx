@@ -6,8 +6,13 @@ const PokerHistory = () => {
   const navigate = useNavigate();
   return (
     <div className="">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-bold text-green-500">Sprint Planning</h2>
+      <div className="pb-2">
+        <text className="text-6xl">
+          Sprint<span className="text-[#00B100] font-bold">Sync</span>
+        </text>
+      </div>
+      <div className="flex justify-between items-center my-4">
+        <div className="text-3xl font-bold text-green-500">Sprint Planning</div>
         <button
           onClick={() => navigate("/pokerrole")}
           className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
