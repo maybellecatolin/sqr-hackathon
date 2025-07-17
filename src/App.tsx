@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type ChangeEvent, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUserStore } from "./stores/UserStore";
 import SpeechRecognition, {
@@ -6,11 +6,9 @@ import SpeechRecognition, {
 } from "react-speech-recognition";
 
 import "./App.css";
-import InviteModal from "./components/InviteModal";
 
 function App() {
   const navigate = useNavigate();
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     role: "",
@@ -22,12 +20,7 @@ function App() {
     ],
   });
 
-  const {
-    transcript,
-    listening,
-    resetTranscript,
-    browserSupportsSpeechRecognition,
-  } = useSpeechRecognition();
+  const { transcript, resetTranscript } = useSpeechRecognition();
 
   const [step, setStep] = useState("name");
   const [service, setService] = useState({});
@@ -44,12 +37,6 @@ function App() {
       setFormData({ ...formData, name: transcript });
     }
     setUser(formData);
-    setStep("role");
-  };
-
-  const handleRole = (role: string) => {
-    setFormData({ ...formData, role });
-    setUser({ ...user, role });
     setStep("select");
   };
 
@@ -60,22 +47,8 @@ function App() {
     navigate(`/${service.name}`);
   };
 
-  const handleModalSubmit = (value: string) => {
-    handleSelectService({
-      name: "estimation",
-      id: value,
-    });
-  };
-
   const handleEstimationRoute = () => {
-    if (user.role === "facilitator") {
-      handleSelectService({
-        name: "estimation",
-        id: Math.random().toString(36).slice(2, 7),
-      });
-    } else {
-      setIsModalOpen(true);
-    }
+    navigate("/pokerhistory");
   };
 
   return (
@@ -107,7 +80,7 @@ function App() {
                   />
                   <button
                     className="bg-transparent px-2"
-                    onClick={SpeechRecognition.startListening}
+                    onClick={() => SpeechRecognition.startListening()}
                   >
                     &#127908;
                   </button>
@@ -120,55 +93,19 @@ function App() {
           </div>
         </div>
       )}
-      {step === "role" && (
-        <div className="text-left pl-8">
-          <div className="py-4">
+      {step === "select" && (
+        <div className="pt-8">
+          <div className="text-left">
             <text className="text-2xl">
               Hi, <span className="font-bold">{formData.name}</span>! &#128075;
             </text>
-          </div>
-          <div>
-            <text className="text-2xl">Joining as:</text>
-          </div>
-          <div className="flex flex-row py-4">
-            <div className="flex flex-col content-center justify-center px-2">
-              <button
-                className="w-36 h-36 bg-[url('https://t3.ftcdn.net/jpg/02/68/69/96/360_F_268699676_l2e8ARcqkXtlXeYDCf5XzWLRGemqYcyA.jpg')] bg-cover bg-center rounded-lg hover:brightness-110 transition-all "
-                onClick={() => handleRole("facilitator")}
-              ></button>
-              {/* <div>
-                <text> Facilitator</text>
-              </div> */}
+            <div className="pb-8 pt-2">
+              <text className="text-2xl">Let's get Started! &#129497;</text>
             </div>
-            <div className="flex flex-col content-center justify-center px-2">
-              <button
-                className="w-36 h-36 bg-[url('https://easy-peasy.ai/cdn-cgi/image/quality=80,format=auto,width=700/https://media.easy-peasy.ai/5fee2ab3-57d9-45cf-bf5b-fe7136cada31/8e68ab24-1d22-46b3-9ebc-c9935def7ae7.png')] bg-cover bg-center rounded-lg hover:brightness-110 transition-all "
-                onClick={() => handleRole("user")}
-              ></button>
-              {/* <div>
-                <text> User</text>
-              </div> */}
-            </div>
-            <div className="flex flex-col content-center justify-center px-2">
-              <button
-                className="w-36 h-36 bg-[url('https://media.istockphoto.com/id/486972402/vector/watching-a-game.jpg?s=612x612&w=0&k=20&c=DdudPdwgohiBuvm7Hg-zmJAQzRZwTcDnLE5-aDDJP5g=')] bg-cover bg-center rounded-lg hover:brightness-110 transition-all "
-                onClick={() => handleRole("observer")}
-              ></button>
-              {/* <div>
-                <text> User</text>
-              </div> */}
-            </div>
-          </div>
-        </div>
-      )}
-      {step === "select" && (
-        <div className="pt-8">
-          <div className="p-8">
-            <text className="text-2xl">Let's get Started! &#129497;</text>
           </div>
           <div className="w-2xl">
             <button className="p-6 text-4xl" onClick={handleEstimationRoute}>
-              Estimation
+              Sprint Planning
             </button>
           </div>
           <div className="card">
@@ -186,11 +123,6 @@ function App() {
           </div>
         </div>
       )}
-      <InviteModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onSubmit={handleModalSubmit}
-      />
     </>
   );
 }

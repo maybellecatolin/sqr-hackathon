@@ -9,7 +9,7 @@ export const SprintDetail = () => {
 
   return (
     <div className="flex flex-col h-full text-left justify-start">
-      <h1 className="text-2xl font-bold mb-2">{sprint.name}</h1>
+      <h1 className="text-2xl font-bold mb-2 text-green-500">{sprint.name}</h1>
       <p className="text-white font-bold mb-6 pl-4">{sprint.description}</p>
       <div className="flex-1 overflow-y-auto">
         <StoryList />
