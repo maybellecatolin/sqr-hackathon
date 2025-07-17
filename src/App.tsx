@@ -32,7 +32,7 @@ function App() {
   const [step, setStep] = useState("name");
   const [service, setService] = useState({});
   const setUser = useUserStore((state) => state.setUser);
-
+  const user = useUserStore((state) => state.user);
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     resetTranscript();
@@ -47,9 +47,9 @@ function App() {
     setStep("role");
   };
 
-  const handleRole = (role) => {
+  const handleRole = (role: string) => {
     setFormData({ ...formData, role });
-    setUser(formData);
+    setUser({ ...user, role });
     setStep("select");
   };
 
@@ -61,8 +61,21 @@ function App() {
   };
 
   const handleModalSubmit = (value: string) => {
-    console.log(value);
-    // navigate(`/${service.name}`);
+    handleSelectService({
+      name: "estimation",
+      id: value,
+    });
+  };
+
+  const handleEstimationRoute = () => {
+    if (user.role === "facilitator") {
+      handleSelectService({
+        name: "estimation",
+        id: Math.random().toString(36).slice(2, 7),
+      });
+    } else {
+      setIsModalOpen(true);
+    }
   };
 
   return (
@@ -154,16 +167,7 @@ function App() {
             <text className="text-2xl">Let's get Started! &#129497;</text>
           </div>
           <div className="w-2xl">
-            <button
-              className="p-6 text-4xl"
-              onClick={
-                () => setIsModalOpen(true)
-                // handleSelectService({
-                //   name: "estimation",
-                //   id: Math.random().toString(36).slice(2, 7),
-                // })
-              }
-            >
+            <button className="p-6 text-4xl" onClick={handleEstimationRoute}>
               Estimation
             </button>
           </div>
