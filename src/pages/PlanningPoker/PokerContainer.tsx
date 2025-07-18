@@ -48,7 +48,7 @@ export default function PokerContainer() {
                   <UserCard
                     key={p.selectedCard}
                     value={
-                      !showCards ? (
+                      ["facilitator", "observer"].includes(p.role)? <span className="text-3xl">&#129488;</span>: !showCards ? (
                         p.selectedCard ? (
                           <span className="text-3xl">&#128640;</span>
                         ) : (
