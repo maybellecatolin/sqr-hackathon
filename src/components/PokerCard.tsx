@@ -11,7 +11,7 @@ const Card: React.FC<CardProps> = ({ value, selected, onClick, disabled }) => {
   return (
     <button
       onClick={onClick}
-      disabled
+      disabled={disabled}
       className={`w-18 h-28 m-2 rounded-lg text-xl font-semibold flex items-center justify-center border transition text-green-600
         ${
           selected

@@ -1,5 +1,4 @@
 import Card from "../../components/PokerCard";
-import { useState } from "react";
 import { usePokerStore } from "../../stores/PokerStore";
 import { useUserStore } from "../../stores/UserStore";
 import UserCard from "../../components/UserCard";
@@ -8,10 +7,11 @@ const cardOptions = ["0", "1", "2", "3", "5", "8", "13", "21", "?"];
 
 export default function PokerContainer() {
   const user = useUserStore((state) => state.user);
-  const { players, selectCard, showCards, toggleShowCards, room, revealed, story } =
+  const { players, selectCard, reset, showCards, toggleShowCards, room, revealed, story } =
     usePokerStore();
 
   console.log("PokerContainer - players", players);
+  console.log("PokerContainer - user", user);
 
   const currentPlayer = players.find((p) => p.id === user.id);
 
@@ -75,7 +75,7 @@ export default function PokerContainer() {
                 {revealed ? "Hide" : "Reveal"}
               </button>
               <button
-                onClick={() => {}}
+                onClick={() => reset()}
                 className="bg-indigo-600  mx-2  text-white px-4 py-2 rounded hover:bg-indigo-700 mb-4"
               >
                 Restart
@@ -83,7 +83,7 @@ export default function PokerContainer() {
             </div>
           )}
         </div>
-        {!showCards && !["facilitator", "observer"].includes(user.role) && (
+        {!revealed && !["facilitator", "observer"].includes(user.role) && (
           <h3 className="text-lg font-medium mb-2 text-blue-400">
             Waiting for players vote...
           </h3>

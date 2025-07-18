@@ -58,7 +58,7 @@ export const usePokerStore = create<PokerState>((set, get) => {
         selectedCard:
           state.votes?.find((v) => v.user.id === u.id)?.value || null,
       })),
-      showCards: !!state.revealed,
+      showCards: state.revealed,
       story: state.story,
       room: state.roomId,
       revealed: state.revealed,
@@ -86,9 +86,9 @@ export const usePokerStore = create<PokerState>((set, get) => {
     players: [],
     showCards: false,
     selectCard: (id, card) => {
+      console.log("[PokerStore] Selecting card", { id, card });
       const room = get().room;
       const user = get().players.find((p) => p.id === id);
-      console.log("players", get().players);
       console.log("[PokerStore] Selecting card", { id, card, room, user });
       if (room && user) {
         sendEvent("vote", { room, user, value: card });
@@ -106,10 +106,6 @@ export const usePokerStore = create<PokerState>((set, get) => {
     reset: () => {
       const room = get().room;
       if (room) sendEvent("reset", { room });
-      set(() => ({
-        players: [],
-        showCards: false,
-      }));
     },
     joinRoom: (room, user) => {
       sendEvent("join", { room, user });
@@ -122,7 +118,6 @@ export const usePokerStore = create<PokerState>((set, get) => {
     },
     setStory: (room, story) => {
       sendEvent("setStory", { room, story });
-      set({ story });
     },
     leaveRoom: () => {
       disconnectSocket();
