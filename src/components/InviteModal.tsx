@@ -2,12 +2,13 @@ import { Dialog, Transition } from "@headlessui/react";
 import { Fragment, useState } from "react";
 
 interface ModalProps {
+  role: string;
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (inputValue: string) => void;
 }
 
-export default function InviteModal({ isOpen, onClose, onSubmit }: ModalProps) {
+export default function InviteModal({ role,  isOpen, onClose, onSubmit }: ModalProps) {
   const [inputValue, setInputValue] = useState("");
   const [error, setError] = useState("");
 
@@ -49,7 +50,7 @@ export default function InviteModal({ isOpen, onClose, onSubmit }: ModalProps) {
           >
             <Dialog.Panel className="w-full max-w-md rounded-lg bg-white p-6 shadow-xl transition-all">
               <Dialog.Title className="text-lg font-semibold text-gray-900">
-                Input Invite Code
+                {role === "facilitator" ? "Create a Room" : "Join a Room"}
               </Dialog.Title>
 
               <div className="mt-4">

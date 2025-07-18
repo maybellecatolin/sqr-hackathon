@@ -1,6 +1,5 @@
 import Card from "../../components/PokerCard";
-import { useEffect, useState } from "react";
-import { v4 as uuidv4 } from "uuid";
+import { useState } from "react";
 import { usePokerStore } from "../../stores/PokerStore";
 import { useUserStore } from "../../stores/UserStore";
 import UserCard from "../../components/UserCard";
@@ -8,18 +7,13 @@ import UserCard from "../../components/UserCard";
 const cardOptions = ["0", "1", "2", "3", "5", "8", "13", "21", "?"];
 
 export default function PokerContainer() {
-  const [localPlayerId, setLocalPlayerId] = useState("");
   const user = useUserStore((state) => state.user);
-  const { players, addPlayer, selectCard, showCards, toggleShowCards } =
+  const { players, selectCard, showCards, toggleShowCards, room, revealed, story } =
     usePokerStore();
-  console.log(user);
-  useEffect(() => {
-    const id = uuidv4();
-    setLocalPlayerId(id);
-    addPlayer({ id, name: user.name, selectedCard: null });
-  }, []);
 
-  const currentPlayer = players.find((p) => p.id === localPlayerId);
+  console.log("PokerContainer - players", players);
+
+  const currentPlayer = players.find((p) => p.id === user.id);
 
   return (
     <div>
@@ -34,16 +28,16 @@ export default function PokerContainer() {
       <>
         <h4>
           Invite your team:
-          <span className="font-bold px-2">A67QW0PL</span>
+          <span className="font-bold px-2">{room}</span>
           <span>
-            <i class="fa" onClick={() => {}}>
+            <i className="fa" onClick={() => {}}>
               &#xf0c5;
             </i>
           </span>
         </h4>
         <h3 className="text-lg font-medium mb-2">
           User Story:{" "}
-          <span className="font-bold text-green-500">SQRPR-4444</span>
+          <span className="font-bold text-green-500">{story}</span>
         </h3>
 
         <div>
@@ -78,7 +72,7 @@ export default function PokerContainer() {
                 onClick={toggleShowCards}
                 className="bg-indigo-600 text-white px-4 py-2  mx-2 rounded hover:bg-indigo-700 mb-4"
               >
-                {showCards ? "Hide" : "Reveal"}
+                {revealed ? "Hide" : "Reveal"}
               </button>
               <button
                 onClick={() => {}}
@@ -105,8 +99,8 @@ export default function PokerContainer() {
                   key={value}
                   value={value}
                   selected={currentPlayer?.selectedCard === value}
-                  onClick={() => selectCard(currentPlayer.id, value)}
                   disabled={["facilitator", "observer"].includes(user.role)}
+                  onClick={() => selectCard(user.id, value)}
                 />
               ))}
             </div>

@@ -1,4 +1,4 @@
-import { useState, type ChangeEvent, type FormEvent } from "react";
+import {  useState, type ChangeEvent, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUserStore } from "./stores/UserStore";
 import SpeechRecognition, {
@@ -23,9 +23,9 @@ function App() {
   const { transcript, resetTranscript } = useSpeechRecognition();
 
   const [step, setStep] = useState("name");
-  const [service, setService] = useState({});
+  const [, setService] = useState({});
   const setUser = useUserStore((state) => state.setUser);
-  const user = useUserStore((state) => state.user);
+  // const user = useUserStore((state) => state.user);
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     resetTranscript();
@@ -36,14 +36,14 @@ function App() {
     if (transcript) {
       setFormData({ ...formData, name: transcript });
     }
-    setUser(formData);
+    setUser(formData.name);
     setStep("select");
   };
 
   const handleSelectService = (service: { id: string; name: string }) => {
     setFormData({ ...formData, services: [...formData.services, service] });
     setService(service);
-    setUser(formData);
+    setUser(formData.name);
     navigate(`/${service.name}`);
   };
 

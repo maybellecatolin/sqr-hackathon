@@ -2,22 +2,30 @@ import { useState } from "react";
 import { useUserStore } from "../stores/UserStore";
 import InviteModal from "./InviteModal";
 import { useNavigate } from "react-router-dom";
+import { usePokerStore } from "../stores/PokerStore";
 
 export const PokerRole = () => {
-  const setUser = useUserStore((state) => state.setUser);
-  useUserStore;
+  const setRole = useUserStore((state) => state.setRole);
+  const { createRoom, joinRoom } = usePokerStore();
   const user = useUserStore((state) => state.user);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const navigate = useNavigate();
 
-  const handleRole = (role: string) => {
-    setUser({ ...user, role });
+  const handleRole = (role: "facilitator" | "observer" | "voter") => {
+    setRole(user.id, role);
     setIsModalOpen(true);
   };
 
   const handleModalSubmit = (value: string) => {
+    setIsModalOpen(false);
+    const isFacilitator = user!.role === "facilitator";
+    if (isFacilitator) {
+      createRoom(user);
+    } else {
+      joinRoom(value, user);
+    }
     navigate("/estimation");
   };
 
@@ -34,7 +42,7 @@ export const PokerRole = () => {
       <div className="text-left pl-8">
         <div className="py-4">
           <text className="text-2xl">
-            Hi, <span className="font-bold">{user.name}</span>! &#128075;
+            Hi, <span className="font-bold">{user!.name}</span>! &#128075;
           </text>
         </div>
         <div>
@@ -50,7 +58,7 @@ export const PokerRole = () => {
           <div className="flex flex-col content-center justify-center px-3">
             <button
               className="w-44 h-44 bg-[url('https://easy-peasy.ai/cdn-cgi/image/quality=80,format=auto,width=700/https://media.easy-peasy.ai/5fee2ab3-57d9-45cf-bf5b-fe7136cada31/8e68ab24-1d22-46b3-9ebc-c9935def7ae7.png')] bg-cover bg-center rounded-lg hover:brightness-110 transition-all "
-              onClick={() => handleRole("user")}
+              onClick={() => handleRole("voter")}
             ></button>
           </div>
           <div className="flex flex-col content-center justify-center px-3">
@@ -62,6 +70,7 @@ export const PokerRole = () => {
         </div>
       </div>
       <InviteModal
+        role={user.role}
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSubmit={handleModalSubmit}
