@@ -77,7 +77,6 @@ export const usePokerStore = create<PokerState>((set, get) => {
     },
     createRoom: async (user: User) => {
       try {
-        console.log("[PokerStore] Creating room for user:", user);
         sendEvent("createRoom", { user });
       } catch (err) {
         console.error("Failed to create room:", err);
@@ -86,10 +85,8 @@ export const usePokerStore = create<PokerState>((set, get) => {
     players: [],
     showCards: false,
     selectCard: (id, card) => {
-      console.log("[PokerStore] Selecting card", { id, card });
       const room = get().room;
       const user = get().players.find((p) => p.id === id);
-      console.log("[PokerStore] Selecting card", { id, card, room, user });
       if (room && user) {
         sendEvent("vote", { room, user, value: card });
       }

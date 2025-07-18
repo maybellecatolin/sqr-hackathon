@@ -79,10 +79,6 @@ export class PokerGateway {
   ) {
     // Generate a unique roomId
     const roomId = randomUUID();
-    logger.log(
-      `[PokerGateway] Creating room ${roomId} for user ${JSON.stringify(data.user)}`,
-    );
-    logger.log(`Creating room ${roomId} with facilitator ${data.user.name}`);
     this.rooms[roomId] = {
       votes: [],
       revealed: false,
