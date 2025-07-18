@@ -1,6 +1,12 @@
 import React, { useState } from "react";
 
-const Column = ({ title, cardColor }) => {
+interface ColumnProps {
+  type: "wentWell" | "wentWrong" | "toImprove" | "actionItems";
+  title: string;
+  cardColor: string;
+}
+
+const Column = ({ type, title, cardColor }: ColumnProps) => {
   const [cards, setCards] = useState([]);
   const [input, setInput] = useState("");
 

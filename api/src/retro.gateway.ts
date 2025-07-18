@@ -5,11 +5,12 @@ import {
   MessageBody,
   ConnectedSocket,
 } from '@nestjs/websockets';
+import { randomUUID } from 'crypto';
 import { Server, Socket } from 'socket.io';
 
 interface RetroItem {
   id: string;
-  type: 'wentWell' | 'wentWrong' | 'toImprove' | 'actionItem';
+  type: 'wentWell' | 'wentWrong' | 'toImprove' | 'actionItems';
   text: string;
   author: string;
   votes: number;
@@ -42,8 +43,20 @@ export class RetroGateway {
     }
   }
 
+  @SubscribeMessage('retroCreateRoom')
+  async handleCreateRoom(
+    @MessageBody()
+    data: { roomId: string; facilitator: string },
+    @ConnectedSocket() client: Socket,
+  ) {
+    const roomId = randomUUID();
+    this.createRoom(roomId, data.facilitator);
+    await client.join(roomId);
+    this.server.to(roomId).emit('retroState', this.rooms[roomId]);
+  }
+
   @SubscribeMessage('retroJoin')
-  handleJoin(
+  async handleJoin(
     @MessageBody()
     data: {
       room: string;
@@ -52,7 +65,7 @@ export class RetroGateway {
     },
     @ConnectedSocket() client: Socket,
   ) {
-    void client.join(data.room);
+    await client.join(data.room);
     if (!this.rooms[data.room]) {
       this.rooms[data.room] = {
         items: [],

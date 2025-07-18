@@ -7,6 +7,8 @@ interface Player {
   id: string;
   name: string;
   selectedCard: string | null;
+  role: User["role"];
+  canVote: boolean;
 }
 
 interface UserContext {
@@ -57,6 +59,8 @@ export const usePokerStore = create<PokerState>((set, get) => {
         name: u.name,
         selectedCard:
           state.votes?.find((v) => v.user.id === u.id)?.value || null,
+        role: u.role,
+        canVote: u.canVote,
       })),
       showCards: state.revealed,
       story: state.story,

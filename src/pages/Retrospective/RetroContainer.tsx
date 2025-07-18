@@ -1,7 +1,7 @@
 import Column from "../../components/RetroCol";
 
 export default function RetroContainer() {
-  const columns = [
+  const columns: {id: "wentWell" | "wentWrong" | "toImprove" | "actionItems"; title: string; cardColor: string;}[] = [
     { id: "wentWell", title: "✅ Went Well", cardColor: "bg-green-100" },
     { id: "wentWrong", title: "❌ Went Wrong", cardColor: "bg-red-100" },
     { id: "toImprove", title: "🔧 To Improve", cardColor: "bg-yellow-100" },
@@ -17,7 +17,7 @@ export default function RetroContainer() {
         <div className="flex flex-col lg:flex-row gap-4 h-[80vh]">
           {columns.map((col) => (
             <div key={col.id} className="flex-1 min-w-[250px]">
-              <Column title={col.title} cardColor={col.cardColor} />
+              <Column type={col.id} title={col.title} cardColor={col.cardColor} />
             </div>
           ))}
         </div>

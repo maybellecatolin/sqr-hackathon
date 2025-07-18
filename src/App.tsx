@@ -25,7 +25,6 @@ function App() {
   const [step, setStep] = useState("name");
   const [, setService] = useState({});
   const setUser = useUserStore((state) => state.setUser);
-  // const user = useUserStore((state) => state.user);
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     resetTranscript();
